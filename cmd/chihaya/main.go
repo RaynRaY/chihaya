@@ -152,7 +152,8 @@ func RootRunCmdFunc(cmd *cobra.Command, args []string) error {
 		select {
 		case <-reload.Done():
 			log.Info("reloading; received reload signal")
-			peerStore, err := r.Stop(true)
+			keepPeerStore, _ := cmd.Flags().GetBool("keep-peer-store");
+			peerStore, err := r.Stop(keepPeerStore)
 			if err != nil {
 				return err
 			}
@@ -220,6 +221,7 @@ func main() {
 
 	rootCmd.PersistentFlags().Bool("debug", false, "enable debug logging")
 	rootCmd.PersistentFlags().Bool("json", false, "enable json logging")
+	rootCmd.PersistentFlags().Bool("keep-peer-store", true, "keep peer store on reload")
 	if runtime.GOOS == "windows" {
 		rootCmd.PersistentFlags().Bool("nocolors", true, "disable log coloring")
 	} else {
